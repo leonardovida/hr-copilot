@@ -1,6 +1,62 @@
+# Local development
+
+## Project structure
+
+The project is structured as follows
+
+```bash
+tree . -d -L 2 # from the root of the repository
+```
+
+```bash
+talent_copilot
+├── backend
+│   ├── __pycache__
+│   ├── dev # This holds the docker-compose files for development
+│   └── talent_copilot # This is the main package for the backend
+├── docs
+│   └── adr # The architecture decision records
+├── frontend
+│   ├── app # The main application
+│   ├── components # Reusable components
+│   ├── lib # Reusable functions
+│   ├── node_modules
+│   └── public
+└── terraform # Terraform configuration for the project
+```
+
+## Frontend
+
+### Next.js UI
+
+#### System Requirements
+
+- [Node.js 18.17](https://nodejs.org/en) or later.
+
+#### Running Locally
+
+Run the development server:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Backend
+
+### Pre-commit
+
+In this project we use pre-commit. This is a tool to insure consistent formatting and styling to our code across developers. To install pre-commit simply run inside the shell:
+
+```bash
+pre-commit install
+```
+
 ### Environment Variables (.env)
 
-Then create a `.env` file inside `src` directory:
+Then create a `.env` file inside `backend` directory:
 
 ```sh
 touch .env
@@ -228,7 +284,7 @@ class EntityDelete(BaseModel):
 
 ### 5.5 Alembic Migrations
 
-Then, while in the `src` folder, run Alembic migrations:
+Then, while in the `backend` folder, run Alembic migrations:
 
 ```sh
 poetry run alembic revision --autogenerate
@@ -787,7 +843,7 @@ If you are using `docker compose`, the worker is already running.
 If you are doing it from scratch, run while in the `root` folder:
 
 ```sh
-poetry run arq src.app.core.worker.settings.WorkerSettings
+poetry run arq backend.app.core.worker.settings.WorkerSettings
 ```
 
 ### 5.11 Rate Limiting
@@ -962,11 +1018,11 @@ If you are doing it from scratch, ensure your postgres and your redis are runnin
 while in the `root` folder, run to start the application with uvicorn server:
 
 ```sh
-poetry run uvicorn src.app.main:app --reload
+poetry run uvicorn backend.app.main:app --reload
 ```
 
 And for the worker:
 
 ```sh
-poetry run arq src.app.core.worker.settings.WorkerSettings
+poetry run arq backend.app.core.worker.settings.WorkerSettings
 ```

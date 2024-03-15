@@ -5,7 +5,7 @@ description = "A fully Async FastAPI boilerplate using SQLAlchemy and Pydantic 2
 authors = ["Igor Magalhaes <igor.magalhaes.r@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "src" }]
+packages = [{ include = "backend" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -33,6 +33,8 @@ fastcrud = "^0.7.0"
 pdfplumber = "^0.11.0"
 boto3 = "^1.34.63"
 pendulum = "^3.0.0"
+instructor = "^0.6.4"
+openai = "^1.14.0"
 
 
 [tool.poetry.group.dev.dependencies]

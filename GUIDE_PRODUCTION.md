@@ -14,12 +14,12 @@ If you are using docker compose, you should uncomment this part of the docker-co
   #     context: .
   #     dockerfile: Dockerfile
   #   env_file:
-  #     - ./src/.env
+  #     - ./backend/.env
   #   depends_on:
   #     - db
-  #   command: python -m src.scripts.create_first_superuser
+  #   command: python -m backend.scripts.create_first_superuser
   #   volumes:
-  #     - ./src:/code/src
+  #     - ./backend:/code/backend
 ```
 
 Getting:
@@ -31,12 +31,12 @@ Getting:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - ./src/.env
+      - ./backend/.env
     depends_on:
       - db
-    command: python -m src.scripts.create_first_superuser
+    command: python -m backend.scripts.create_first_superuser
     volumes:
-      - ./src:/code/src
+      - ./backend:/code/backend
 ```
 
 While in the base project folder run to start the services:
@@ -62,7 +62,7 @@ docker-compose stop create_superuser
 While in the `root` folder, run (after you started the application at least once to create the tables):
 
 ```sh
-poetry run python -m src.scripts.create_first_superuser
+poetry run python -m backend.scripts.create_first_superuser
 ```
 
 ### Creating the first tier
@@ -80,7 +80,7 @@ If you are using the db in docker, you need to change this in `docker-compose.ym
   db:
     image: postgres:13
     env_file:
-      - ./src/.env
+      - ./backend/.env
     volumes:
       - postgres-data:/var/lib/postgresql/data
     # -------- replace with comment to run migrations with docker --------
@@ -101,7 +101,7 @@ Getting:
       - 5432:5432
 ```
 
-While in the `src` folder, run Alembic migrations:
+While in the `backend` folder, run Alembic migrations:
 
 ```sh
 poetry run alembic revision --autogenerate
@@ -364,7 +364,7 @@ First you need to uncomment the following part in the `docker-compose.yml` file:
   #     context: .
   #     dockerfile: Dockerfile
   #   env_file:
-  #     - ./src/.env
+  #     - ./backend/.env
   #   depends_on:
   #     - db
   #     - create_superuser
@@ -383,7 +383,7 @@ You'll get:
       context: .
       dockerfile: Dockerfile
     env_file:
-      - ./src/.env
+      - ./backend/.env
     depends_on:
       - db
       - create_superuser

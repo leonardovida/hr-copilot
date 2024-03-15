@@ -20,7 +20,7 @@ COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./src/app /code/app
-COPY ./src/scripts /code/scripts
+COPY ./backend/app /code/app
+COPY ./backend/scripts /code/scripts
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

@@ -1,0 +1,78 @@
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+app = 'hr-copilot-production'
+primary_region = 'ams'
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = ".dockerignore"
+
+[http_service]
+  internal_port = 8000
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[env]
+  # Note: commented out environments needs to placed in fly secrets
+  # --> fly secrets --config fly.production.toml set XXX=XXX
+
+  # Secrets
+  # TALENT_COPILOT_DB_PASS
+  # TALENT_COPILOT_OPENAI_API_KEY
+  # TALENT_COPILOT_AWS_SECRET_ACCESS_KEY
+  # TALENT_COPILOT_AWS_ACCESS_KEY_ID
+  # TALENT_COPILOT_TOGETHER_API_KEY
+  # TALENT_COPILOT_REDIS_PASS
+
+  # TODO
+  #SECRET_KEY="de2132a4a3a029d6a93a2aefcb519f0219990f92ca258a7c5ed938a444dbe1c8"
+
+  # General
+  APP_NAME="hr-copilot"
+  APP_DESCRIPTION="HR copilot"
+  APP_VERSION="0.1"
+  CONTACT_NAME="Leonardo Vida"
+  CONTACT_EMAIL="lleonardovida@gmail.com"
+  LICENSE_NAME=""
+
+  # Crypt
+  ALGORITHM="HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+  # Sentry
+  TALENT_COPILOT_SENTRY_DSN = "https://71e207a3b4d2fbe8ee032aa0d1470394@o4506761852551168.ingest.sentry.io/4506772487864320"
+
+  # Redis
+  TALENT_COPILOT_REDIS_HOST = "fly-redis-talent-copilot-production.upstash.io"
+  TALENT_COPILOT_REDIS_PORT = "6379"
+  TALENT_COPILOT_REDIS_USER = "default"
+
+  # DB
+  POSTGRES_USER="leonardo.vida"
+  POSTGRES_PASSWORD=1234
+  POSTGRES_SERVER="db"
+  POSTGRES_PORT=5432
+  POSTGRES_DB="talent_copilot_production"
+  POSTGRES_ASYNC_PREFIX="postgresql+asyncpg://"
+
+  TALENT_COPILOT_DB_HOST = "ep-cold-waterfall-a27rc1yh.eu-central-1.aws.neon.tech"
+  TALENT_COPILOT_DB_PORT = "5432"
+  TALENT_COPILOT_DB_USER = "leonardo.vida"
+  TALENT_COPILOT_DB_BASE = "talent_copilot_production"
+
+  TALENT_COPILOT_S3_BUCKET_NAME = "tc-production-documents"
+
+
+  # LLM
+  TALENT_COPILOT_OPENAI_GPT_MODEL_NAME = "gpt-4-turbo-preview"
+  TALENT_COPILOT_LLM_PROVIDER = "openai"
+  TALENT_COPILOT_MODEL_TYPE = "openai" # this variable chooses between providers
+  TALENT_COPILOT_OPENAI_SEED = "12345"
+  TALENT_COPILOT_OPENAI_TEMPERATURE = "0.0"
+
+[[vm]]
+  memory = '2gb'
+  cpu_kind = 'shared' # TODO: increase to 'performance'
+  cpus = 4 #
