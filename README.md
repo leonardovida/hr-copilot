@@ -14,10 +14,14 @@ Currently it provides the following:
 
 Overall the techstack looks like this:
 
-- Next.js + TypeScript for the frontend website, deployed via Vercel
 - FastAPI + PostgreSQL for the backend, deployed via Fly.io (but that could easily be ECS or any server with a docker compose)
-- Terraform for the infrastructure
-- OpenAI for the LLM model, soon to be switched to a fine-tuned version using feedback and queries
+  - The FastAPI part builds on the great work by [`igorbenav`](https://github.com/igorbenav), both using his `fastcrud` project and his FastAPI boilerplate.
+- Next.js + TypeScript for the frontend website, deployed via Vercel
+  - This is a simple frontend leveraging shadcn/ui
+- OpenAI for parsing and evaluating the job description and the resumes being uploaded
+  - to be switched to a fine-tuned version using feedback and queries
+- A very simple Terraform module for building the infrastructure required.
+  - Mainly this creates S3 buckets, but it also has a commented-out option of moving to ECS (though currently not used)
 
 ## Running the service
 
