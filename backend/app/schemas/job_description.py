@@ -13,10 +13,6 @@ class JobDescriptionBase(BaseModel):
         str | None,
         Field(min_length=1, max_length=63206, examples=["This is the content of my job description."], default=None),
     ]
-    s3_url: Annotated[
-        str | None,
-        Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", examples=["s3.exampleurl.com"], default=None),
-    ]
 
 
 class JobDescription(TimestampSchema, JobDescriptionBase, UUIDSchema, PersistentDeletion):
@@ -39,6 +35,10 @@ class JobDescriptionRead(BaseModel):
 
 
 class JobDescriptionCreate(JobDescriptionBase):
+    s3_url: Annotated[
+        str | None,
+        Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", examples=["s3.exampleurl.com"], default=None),
+    ]
     pdf_file: UploadFile | None
     model_config = ConfigDict(extra="forbid")
 
