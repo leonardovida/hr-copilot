@@ -9,7 +9,7 @@ services:
       # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     env_file:
-      - ./.env
+      - ./.env-local
     # -------- replace with comment if you are using nginx --------
     ports:
       - "8000:8000"
@@ -20,7 +20,7 @@ services:
       - redis
     volumes:
       - ./app:/code/app
-      - ./.env:/code/.env
+      - ./.env-local:/code/.env
 
   worker:
     build:
@@ -28,18 +28,18 @@ services:
       dockerfile: Dockerfile
     command: arq app.core.worker.settings.WorkerSettings
     env_file:
-      - ./.env
+      - ./.env-local
     depends_on:
       - db
       - redis
     volumes:
       - ./app:/code/app
-      - ./.env:/code/.env
+      - ./.env-local:/code/.env
 
   db:
     image: postgres:16
     env_file:
-      - ./.env
+      - ./.env-local
     volumes:
       - postgres-data:/var/lib/postgresql/data
     # -------- replace with comment to run migrations with docker --------
@@ -65,7 +65,7 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     env_file:
-      - ./backend/.env
+      - ./.env-local
     depends_on:
       - db
 
@@ -85,7 +85,7 @@ services:
   #     context: .
   #     dockerfile: Dockerfile
   #   env_file:
-  #     - ./.env
+  #     - ./.env-local
   #   depends_on:
   #     - db
   #     - web
@@ -99,7 +99,7 @@ services:
   #     context: .
   #     dockerfile: Dockerfile
   #   env_file:
-  #     - ./.env
+  #     - ./.env-local
   #   depends_on:
   #     - db
   #     - create_superuser
@@ -114,7 +114,7 @@ services:
   #     context: .
   #     dockerfile: Dockerfile
   #   env_file:
-  #     - ./.env
+  #     - ./.env-local
   #   depends_on:
   #     - db
   #     - web
