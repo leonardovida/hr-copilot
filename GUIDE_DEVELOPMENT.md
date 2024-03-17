@@ -1,5 +1,10 @@
 # Local development
 
+> \[!WARNING\]
+> This repository is in a work in progress state and things might and will change.
+
+This guide provides an overview of the settings that need to be taken care of when developing locally. Although this guide will mostly be used by developers, be aware that you need to skim it before deploying in production (or staging) as it will tell you which knob do what.
+
 ## Project structure
 
 The project is structured as follows

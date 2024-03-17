@@ -1,5 +1,8 @@
 # Guide deployment
 
+> \[!WARNING\]
+> This repository is in a work in progress state and things might and will change.
+
 As you might have noticed, there are multiple ways to deploy this project. This happens frequently as there are infinite ways to deploy a project. This means that the options chones and explained below are by no means the "best" or "only" options available to deploy this. One might argue [Heroku](https://heroku.com/) or [Vultur](https://www.vultr.com/products/cloud-compute/) are better and cheaper, [Railway](https://railway.app/) and [Render](https://render.com/) are more modern and efficient, heck even a full Typescript project might have been better (but definitely not [cheaper](https://twitter.com/shoeboxdnb/status/1643639119824801793) - see Twitter for astronomical bills) leveraging their serveless offering. We don't want to argue, but rather we are offering some choice that we though might help you.
 
 The choices we provide to deploy the backend are the following:
