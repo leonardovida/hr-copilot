@@ -8,7 +8,7 @@ class CommonResponse(BaseModel):
     message: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "status": settings.STATUS_SUCCESS,
                 "message": "Operation successful",

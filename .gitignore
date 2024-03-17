@@ -1,5 +1,11 @@
 # Custom
 .vscode
+nodemodule/**
+# Sensitive variables
+.env*
+# Deployment
+deploy/fly.io/fly.staging.toml
+deploy/fly.io/fly.production.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

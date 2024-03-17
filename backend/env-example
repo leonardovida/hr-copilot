@@ -1,10 +1,10 @@
 # ------------- app settings -------------
-APP_NAME="Talent Agent"
-APP_DESCRIPTION="Talent Agent"
+APP_NAME=""
+APP_DESCRIPTION=""
 APP_VERSION="0.1"
-CONTACT_NAME="Leonardo Vida"
-CONTACT_EMAIL="lleonardovida@gmail.com.com"
-LICENSE_NAME=""
+CONTACT_NAME="" # Insert
+CONTACT_EMAIL="" # Insert
+LICENSE_NAME="" # Insert
 
 # ------------- database -------------
 POSTGRES_USER="postgres"
@@ -15,14 +15,14 @@ POSTGRES_DB="postgres"
 POSTGRES_ASYNC_PREFIX="postgresql+asyncpg://"
 
 # ------------- crypt -------------
-SECRET_KEY=de2132a4a3a029d6a93a2aefcb519f0219990f92ca258a7c5ed938a444dbe1c8
+SECRET_KEY= # Choose a secret key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 
 # ------------- admin -------------
 ADMIN_NAME="admin"
 ADMIN_EMAIL="admin@admin.com"
-ADMIN_USERNAME="admin"
+ADMIN_USERNAME="" # Choose a username
 ADMIN_PASSWORD="" # Choose a password
 
 PGADMIN_DEFAULT_EMAIL="admin@admin.com"
@@ -57,3 +57,6 @@ TIER_NAME="free"
 
 # -------------- LLM --------------------
 OPENAI_API_KEY="" # Insert your OpenAI API key
+
+# -------------- Sentry --------------------
+SENTRY_DSN="" # Insert your sentry DNS key here

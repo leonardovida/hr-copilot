@@ -2,6 +2,7 @@ default_language_version:
   python: python3.11
 
 repos:
+  # Python
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -37,7 +38,7 @@ repos:
         name: Unused noqa
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.1
+    rev: v0.3.3
     hooks:
       - id: ruff
         args: [--fix]
@@ -59,11 +60,21 @@ repos:
           - mdformat_frontmatter
         exclude: CHANGELOG.md
 
+  # JS and Typescript
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
 
+  # Terraform
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.88.2
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_tflint
+      - id: terraform_validate
+
+  # Local
   - repo: local
     hooks:
       - id: unit_test

@@ -35,16 +35,19 @@ talent_copilot
 
 #### Running Locally
 
-Run the development server:
+To run the development server we recommend using `bun`. Once installed you can simply:
 
 ```bash
 cd frontend
-npm run dev
+bun install
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to view the next.js app running locally. But this is not all! This app uses FastAPI as backend, so not everything is in the typescript app. This is motivated by our willigness to later provide a performant API for the businesses that want to use our app and directly attach to us via our API.
 
 ## Backend
+
+To startup the backend we assume you will be using the docker-compose files provided in the `deploy` folder.
 
 ### Pre-commit
 
@@ -54,27 +57,20 @@ In this project we use pre-commit. This is a tool to insure consistent formattin
 pre-commit install
 ```
 
+This will make sure that each commit is formatted and styled correctly.
+
 ### Environment Variables (.env)
 
-Then create a `.env` file inside `backend` directory:
+Then create a `.env` file inside `backend` directory.
 
 ```sh
 touch .env
 ```
 
-Inside of `.env`, create the following app settings variables:
+Inside of `.env`, please copy and past all the variables present in the env-example variables:
 
-```
-# ------------- app settings -------------
-APP_NAME="Your app name here"
-APP_DESCRIPTION="Your app description here"
-APP_VERSION="0.1"
-CONTACT_NAME="Your name"
-CONTACT_EMAIL="Your email"
-LICENSE_NAME="The license you picked"
-```
-
-For the database ([`if you don't have a database yet, click here`](<>)), create:
+- App settings represent internal settings like the environment (`LOCAL` in this case) and descriptions
+- For the database \[`if you don't have a database yet, we recommend Neon`\](neon console), after having created the databse remotely or locally add the required environment variables as follows
 
 ```
 # ------------- database -------------
@@ -85,7 +81,7 @@ POSTGRES_PORT=5432 # default "5432", if using docker compose you should use "543
 POSTGRES_DB="your_db"
 ```
 
-For database administration using PGAdmin create the following variables in the .env file
+- For database administration using PGAdmin create the following variables in the .env file
 
 ```
 # ------------- pgadmin -------------
@@ -97,8 +93,6 @@ PGADMIN_LISTEN_PORT=80
 To connect to the database, log into the PGAdmin console with the values specified in `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`.
 
 Once in the main PGAdmin screen, click Add Server:
-
-![pgadmin-connect](https://github.com/igorbenav/docs-images/blob/main/289698727-e15693b6-fae9-4ec6-a597-e70ab6f44133-3.png?raw=true)
 
 1. Hostname/address is `db` (if using containers)
 1. Is the value you specified in `POSTGRES_PORT`
@@ -202,89 +196,11 @@ ENVIRONMENT="local"
 - **staging:** `/docs`, `/redoc` and `/openapi.json` available for superusers
 - **production:** `/docs`, `/redoc` and `/openapi.json` not available
 
-### 5.2 Database Model
+## Database
 
-Create the new entities and relationships and add them to the model <br>
-![diagram](https://user-images.githubusercontent.com/43156212/284426387-bdafc637-0473-4b71-890d-29e79da288cf.png)
+### Alembic Migrations
 
-#### 5.2.1 Token Blacklist
-
-Note that this table is used to blacklist the `JWT` tokens (it's how you log a user out) <br>
-![diagram](https://user-images.githubusercontent.com/43156212/284426382-b2f3c0ca-b8ea-4f20-b47e-de1bad2ca283.png)
-
-### 5.3 SQLAlchemy Models
-
-Inside `app/models`, create a new `entity.py` for each new entity (replacing entity with the name) and define the attributes according to [SQLAlchemy 2.0 standards](https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#orm-mapping-styles):
-
-> \[!WARNING\]
-> Note that since it inherits from `Base`, the new model is mapped as a python `dataclass`, so optional attributes (arguments with a default value) should be defined after required  attributes.
-
-```python
-from sqlalchemy import String, DateTime
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.core.db.database import Base
-
-
-class Entity(Base):
-    __tablename__ = "entity"
-
-    id: Mapped[int] = mapped_column("id", autoincrement=True, nullable=False, unique=True, primary_key=True, init=False)
-    name: Mapped[str] = mapped_column(String(30))
-    ...
-```
-
-### 5.4 Pydantic Schemas
-
-Inside `app/schemas`, create a new `entity.py` for for each new entity (replacing entity with the name) and create the schemas according to [Pydantic V2](https://docs.pydantic.dev/latest/#pydantic-examples) standards:
-
-```python
-from typing import Annotated
-
-from pydantic import BaseModel, EmailStr, Field, HttpUrl, ConfigDict
-
-
-class EntityBase(BaseModel):
-    name: Annotated[
-        str,
-        Field(min_length=2, max_length=30, examples=["Entity Name"]),
-    ]
-
-
-class Entity(EntityBase):
-    ...
-
-
-class EntityRead(EntityBase):
-    ...
-
-
-class EntityCreate(EntityBase):
-    ...
-
-
-class EntityCreateInternal(EntityCreate):
-    ...
-
-
-class EntityUpdate(BaseModel):
-    ...
-
-
-class EntityUpdateInternal(BaseModel):
-    ...
-
-
-class EntityDelete(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    is_deleted: bool
-    deleted_at: datetime
-```
-
-### 5.5 Alembic Migrations
-
-Then, while in the `backend` folder, run Alembic migrations:
+While in the `backend` folder, run Alembic migrations:
 
 ```sh
 poetry run alembic revision --autogenerate
@@ -296,41 +212,9 @@ And to apply the migration
 poetry run alembic upgrade head
 ```
 
-### 5.6 CRUD
+### Database operations thanks to `fastcrud`
 
-Inside `app/crud`, create a new `crud_entities.py` inheriting from `FastCRUD` for each new entity:
-
-```python
-from fastcrud import FastCRUD
-
-from app.models.entity import Entity
-from app.schemas.entity import EntityCreateInternal, EntityUpdate, EntityUpdateInternal, EntityDelete
-
-CRUDEntity = FastCRUD[Entity, EntityCreateInternal, EntityUpdate, EntityUpdateInternal, EntityDelete]
-crud_entity = CRUDEntity(Entity)
-```
-
-So, for users:
-
-```python
-# crud_users.py
-from app.model.user import User
-from app.schemas.user import UserCreateInternal, UserUpdate, UserUpdateInternal, UserDelete
-
-CRUDUser = FastCRUD[User, UserCreateInternal, UserUpdate, UserUpdateInternal, UserDelete]
-crud_users = CRUDUser(User)
-```
-
-#### 5.6.1 Get
-
-When actually using the crud in an endpoint, to get data you just pass the database connection and the attributes as kwargs:
-
-```python
-# Here I'm getting the first user with email == user.email (email is unique in this case)
-user = await crud_users.get(db=db, email=user.email)
-```
-
-#### 5.6.2 Get Multi
+#### Get Multi
 
 To get a list of objects with the attributes, you should use the get_multi:
 
@@ -369,51 +253,7 @@ Which will return a python dict with the following structure:
 }
 ```
 
-#### 5.6.3 Create
-
-To create, you pass a `CreateSchemaType` object with the attributes, such as a `UserCreate` pydantic schema:
-
-```python
-from app.schemas.user import UserCreate
-
-# Creating the object
-user_internal = UserCreate(name="user", username="myusername", email="user@example.com")
-
-# Passing the object to be created
-crud_users.create(db=db, object=user_internal)
-```
-
-#### 5.6.4 Exists
-
-To just check if there is at least one row that matches a certain set of attributes, you should use `exists`
-
-```python
-# This queries only the email variable
-# It returns True if there's at least one or False if there is none
-crud_users.exists(db=db, email=user @ example.com)
-```
-
-#### 5.6.5 Count
-
-You can also get the count of a certain object with the specified filter:
-
-```python
-# Here I'm getting the count of users with the name 'User Userson'
-user = await crud_users.count(db=db, name="User Userson")
-```
-
-#### 5.6.6 Update
-
-To update you pass an `object` which may be a `pydantic schema` or just a regular `dict`, and the kwargs.
-You will update with `objects` the rows that match your `kwargs`.
-
-```python
-# Here I'm updating the user with username == "myusername".
-# #I'll change his name to "Updated Name"
-crud_users.update(db=db, object={"name": "Updated Name"}, username="myusername")
-```
-
-#### 5.6.7 Delete
+#### Delete
 
 To delete we have two options:
 
@@ -430,7 +270,7 @@ crud_users.delete(db=db, username="myusername")
 crud_users.db_delete(db=db, username="myusername")
 ```
 
-#### 5.6.8 Get Joined
+#### Get Joined
 
 To retrieve data with a join operation, you can use the get_joined method from your CRUD module. Here's how to do it:
 
@@ -456,7 +296,7 @@ result = await crud_users.get_joined(
 
 This method allows you to perform a join operation, selecting columns from both models, and retrieve a single record.
 
-#### 5.6.9 Get Multi Joined
+#### Get Multi Joined
 
 Similarly, to retrieve multiple records with a join operation, you can use the get_multi_joined method. Here's how:
 
@@ -501,138 +341,7 @@ crud_user.get(db=db, username="myusername")
 crud_user.get(db=db, username="myusername", schema_to_select=UserRead)
 ```
 
-### 5.7 Routes
-
-Inside `app/api/v1`, create a new `entities.py` file and create the desired routes
-
-```python
-from typing import Annotated
-
-from fastapi import Depends
-
-from app.schemas.entity import EntityRead
-from app.core.db.database import async_get_db
-
-...
-
-router = fastapi.APIRouter(tags=["entities"])
-
-
-@router.get("/entities/{id}", response_model=List[EntityRead])
-async def read_entities(request: Request, id: int, db: Annotated[AsyncSession, Depends(async_get_db)]):
-    entity = await crud_entities.get(db=db, id=id)
-
-    return entity
-
-
-...
-```
-
-Then in `app/api/v1/__init__.py` add the router such as:
-
-```python
-from fastapi import APIRouter
-from app.api.v1.entity import router as entity_router
-
-...
-
-router = APIRouter(prefix="/v1")  # this should be there already
-...
-router.include_router(entity_router)
-```
-
-#### 5.7.1 Paginated Responses
-
-With the `get_multi` method we get a python `dict` with full suport for pagination:
-
-```javascript
-{
-  "data": [
-    {
-      "id": 4,
-      "name": "User Userson",
-      "username": "userson4",
-      "email": "user.userson4@example.com",
-      "profile_image_url": "https://profileimageurl.com"
-    },
-    {
-      "id": 5,
-      "name": "User Userson",
-      "username": "userson5",
-      "email": "user.userson5@example.com",
-      "profile_image_url": "https://profileimageurl.com"
-    }
-  ],
-  "total_count": 2,
-  "has_more": false,
-  "page": 1,
-  "items_per_page": 10
-}
-```
-
-And in the endpoint, we can import from `app/api/paginated` the following functions and Pydantic Schema:
-
-```python
-from app.api.paginated import (
-    PaginatedListResponse,  # What you'll use as a response_model to validate
-    paginated_response,  # Creates a paginated response based on the parameters
-    compute_offset,  # Calculate the offset for pagination ((page - 1) * items_per_page)
-)
-```
-
-Then let's create the endpoint:
-
-```python
-import fastapi
-
-from app.schemas.entity import EntityRead
-
-...
-
-
-@router.get("/entities", response_model=PaginatedListResponse[EntityRead])
-async def read_entities(
-    request: Request, db: Annotated[AsyncSession, Depends(async_get_db)], page: int = 1, items_per_page: int = 10
-):
-    entities_data = await crud_entity.get_multi(
-        db=db,
-        offset=compute_offset(page, items_per_page),
-        limit=items_per_page,
-        schema_to_select=UserRead,
-        is_deleted=False,
-    )
-
-    return paginated_response(crud_data=entities_data, page=page, items_per_page=items_per_page)
-```
-
-#### 5.7.2 HTTP Exceptions
-
-To add exceptions you may just import from `app/core/exceptions/http_exceptions` and optionally add a detail:
-
-```python
-from app.core.exceptions.http_exceptions import NotFoundException
-
-# If you want to specify the detail, just add the message
-if not user:
-    raise NotFoundException("User not found")
-
-# Or you may just use the default message
-if not post:
-    raise NotFoundException()
-```
-
-**The predefined possibilities in http_exceptions are the following:**
-
-- `CustomException`: 500 internal error
-- `BadRequestException`: 400 bad request
-- `NotFoundException`: 404 not found
-- `ForbiddenException`: 403 forbidden
-- `UnauthorizedException`: 401 unauthorized
-- `UnprocessableEntityException`: 422 unprocessable entity
-- `DuplicateValueException`: 422 unprocessable entity
-- `RateLimitException`: 429 too many requests
-
-### 5.8 Caching
+### Caching
 
 The `cache` decorator allows you to cache the results of FastAPI endpoint functions, enhancing response times and reducing the load on your application by storing and retrieving data in a cache.
 
@@ -680,122 +389,7 @@ In this case, what will happen is:
 
 Passing resource_id_name is usually preferred.
 
-### 5.9 More Advanced Caching
-
-The behaviour of the `cache` decorator changes based on the request method of your endpoint.
-It caches the result if you are passing it to a **GET** endpoint, and it invalidates the cache with this key_prefix and id if passed to other endpoints (**PATCH**, **DELETE**).
-
-#### Invalidating Extra Keys
-
-If you also want to invalidate cache with a different key, you can use the decorator with the `to_invalidate_extra` variable.
-
-In the following example, I want to invalidate the cache for a certain `user_id`, since I'm deleting it, but I also want to invalidate the cache for the list of users, so it will not be out of sync.
-
-```python
-# The cache here will be saved as "{username}_posts:{username}":
-@router.get("/{username}/posts", response_model=List[PostRead])
-@cache(key_prefix="{username}_posts", resource_id_name="username")
-async def read_posts(request: Request, username: str, db: Annotated[AsyncSession, Depends(async_get_db)]):
-    ...
-
-
-...
-
-# Invalidating cache for the former endpoint by just passing the key_prefix and id as a dictionary:
-@router.delete("/{username}/post/{id}")
-@cache(
-    "{username}_post_cache",
-    resource_id_name="id",
-    to_invalidate_extra={"{username}_posts": "{username}"},  # also invalidate "{username}_posts:{username}" cache
-)
-async def erase_post(
-    request: Request,
-    username: str,
-    id: int,
-    current_user: Annotated[UserRead, Depends(get_current_user)],
-    db: Annotated[AsyncSession, Depends(async_get_db)],
-):
-    ...
-
-
-# And now I'll also invalidate when I update the user:
-@router.patch("/{username}/post/{id}", response_model=PostRead)
-@cache("{username}_post_cache", resource_id_name="id", to_invalidate_extra={"{username}_posts": "{username}"})
-async def patch_post(
-    request: Request,
-    username: str,
-    id: int,
-    values: PostUpdate,
-    current_user: Annotated[UserRead, Depends(get_current_user)],
-    db: Annotated[AsyncSession, Depends(async_get_db)],
-):
-    ...
-```
-
-> \[!WARNING\]
-> Note that adding `to_invalidate_extra` will not work for **GET** requests.
-
-#### Invalidate Extra By Pattern
-
-Let's assume we have an endpoint with a paginated response, such as:
-
-```python
-@router.get("/{username}/posts", response_model=PaginatedListResponse[PostRead])
-@cache(
-    key_prefix="{username}_posts:page_{page}:items_per_page:{items_per_page}",
-    resource_id_name="username",
-    expiration=60,
-)
-async def read_posts(
-    request: Request,
-    username: str,
-    db: Annotated[AsyncSession, Depends(async_get_db)],
-    page: int = 1,
-    items_per_page: int = 10,
-):
-    db_user = await crud_users.get(db=db, schema_to_select=UserRead, username=username, is_deleted=False)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    posts_data = await crud_posts.get_multi(
-        db=db,
-        offset=compute_offset(page, items_per_page),
-        limit=items_per_page,
-        schema_to_select=PostRead,
-        created_by_user_id=db_user["id"],
-        is_deleted=False,
-    )
-
-    return paginated_response(crud_data=posts_data, page=page, items_per_page=items_per_page)
-```
-
-Just passing `to_invalidate_extra` will not work to invalidate this cache, since the key will change based on the `page` and `items_per_page` values.
-To overcome this we may use the `pattern_to_invalidate_extra` parameter:
-
-```python
-@router.patch("/{username}/post/{id}")
-@cache("{username}_post_cache", resource_id_name="id", pattern_to_invalidate_extra=["{username}_posts:*"])
-async def patch_post(
-    request: Request,
-    username: str,
-    id: int,
-    values: PostUpdate,
-    current_user: Annotated[UserRead, Depends(get_current_user)],
-    db: Annotated[AsyncSession, Depends(async_get_db)],
-):
-    ...
-```
-
-Now it will invalidate all caches with a key that matches the pattern `"{username}_posts:*`, which will work for the paginated responses.
-
-> \[!CAUTION\]
-> Using `pattern_to_invalidate_extra` can be resource-intensive on large datasets. Use it judiciously and consider the potential impact on Redis performance. Be cautious with patterns that could match a large number of keys, as deleting many keys simultaneously may impact the performance of the Redis server.
-
-#### Client-side Caching
-
-For `client-side caching`, all you have to do is let the `Settings` class defined in `app/core/config.py` inherit from the `ClientSideCacheSettings` class. You can set the `CLIENT_CACHE_MAX_AGE` value in `.env,` it defaults to 60 (seconds).
-
-### 5.10 ARQ Job Queues
+## ARQ Job Queues
 
 Create the background task in `app/core/worker/functions.py`:
 
@@ -846,7 +440,7 @@ If you are doing it from scratch, run while in the `root` folder:
 poetry run arq backend.app.core.worker.settings.WorkerSettings
 ```
 
-### 5.11 Rate Limiting
+## Rate Limiting
 
 To limit how many times a user can make a request in a certain interval of time (very useful to create subscription plans or just to protect your API against DDOS), you may just use the `rate_limiter` dependency:
 
@@ -870,18 +464,6 @@ Even though this is useful, real power comes from creating `tiers` (categories o
 
 All of the `tier` and `rate_limit` models, schemas, and endpoints are already created in the respective folders (and usable only by superusers). You may use the `create_tier` script to create the first tier (it uses the `.env` variable `TIER_NAME`, which is all you need to create a tier) or just use the api:
 
-Here I'll create a `free` tier:
-
-<p align="left">
-    <img src="https://user-images.githubusercontent.com/43156212/282275103-d9c4f511-4cfa-40c6-b882-5b09df9f62b9.png" alt="passing name = free to api request body" width="70%" height="auto">
-</p>
-
-And a `pro` tier:
-
-<p align="left">
-    <img src="https://user-images.githubusercontent.com/43156212/282275107-5a6ca593-ccc0-4965-b2db-09ec5ecad91c.png" alt="passing name = pro to api request body" width="70%" height="auto">
-</p>
-
 Then I'll associate a `rate_limit` for the path `api/v1/tasks/task` for each of them, I'll associate a `rate limit` for the path `api/v1/tasks/task`.
 
 > \[!WARNING\]
@@ -889,15 +471,7 @@ Then I'll associate a `rate_limit` for the path `api/v1/tasks/task` for each of 
 
 1 request every hour (3600 seconds) for the free tier:
 
-<p align="left">
-    <img src="https://user-images.githubusercontent.com/43156212/282275105-95d31e19-b798-4f03-98f0-3e9d1844f7b3.png" alt="passing path=api/v1/tasks/task, limit=1, period=3600, name=api_v1_tasks:1:3600 to free tier rate limit" width="70%" height="auto">
-</p>
-
 10 requests every hour for the pro tier:
-
-<p align="left">
-    <img src="https://user-images.githubusercontent.com/43156212/282275108-deec6f46-9d47-4f01-9899-ca42da0f0363.png" alt="passing path=api/v1/tasks/task, limit=10, period=3600, name=api_v1_tasks:10:3600 to pro tier rate limit" width="70%" height="auto">
-</p>
 
 Now let's read all the tiers available (`GET api/v1/tiers`):
 

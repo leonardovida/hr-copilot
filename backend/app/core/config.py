@@ -160,23 +160,34 @@ class ScoreSettings(BaseSettings):
     HARD_SKILLS_WEIGHT: float = 0.5
 
 
+class SentrySettings(BaseSettings):
+    SENTRY_DSN: str | None = config("SENTRY_DSN", default=None)  # Should differs for staging and prod
+    SENTRY_SAMPLE_RATE: float = config("SENTRY_SAMPLE_RATE", default=1.0)
+
+
+class LoggingSettings(BaseSettings):
+    LOG_LEVEL: str = config("LOG_LEVEL", default="INFO")
+
+
 class Settings(
     AppSettings,
-    PostgresSettings,
     CryptSettings,
-    FirstUserSettings,
-    TestSettings,
-    RedisCacheSettings,
     ClientSideCacheSettings,
-    RedisQueueSettings,
-    RedisRateLimiterSettings,
     DefaultRateLimitSettings,
     EnvironmentSettings,
+    FirstUserSettings,
+    LoggingSettings,
+    LLMBaseSettings,
     OpenAISettings,
+    PostgresSettings,
+    RedisRateLimiterSettings,
+    RedisQueueSettings,
+    RedisCacheSettings,
     S3Settings,
     StatusSettings,
-    LLMBaseSettings,
     ScoreSettings,
+    SentrySettings,
+    TestSettings,
 ):
     pass
 

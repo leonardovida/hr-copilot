@@ -5,13 +5,18 @@ from typing import Any
 import anyio
 import fastapi
 import redis.asyncio as redis
+import sentry_sdk
 from arq import create_pool
 from arq.connections import RedisSettings
 from fastapi import APIRouter, Depends, FastAPI
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from ..api.dependencies import get_current_superuser
+from ..core.logger import logging
 from ..middleware.client_cache_middleware import ClientCacheMiddleware
 from .config import (
     AppSettings,
@@ -22,6 +27,7 @@ from .config import (
     RedisCacheSettings,
     RedisQueueSettings,
     RedisRateLimiterSettings,
+    SentrySettings,
     settings,
 )
 from .db.database import Base
@@ -33,6 +39,25 @@ from .utils import cache, queue, rate_limit
 async def create_tables() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+
+# -------------- sentry --------------
+async def create_sentry() -> None:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
+        environment=settings.ENVIRONMENT,
+        integrations=[
+            FastApiIntegration(transaction_style="endpoint"),
+            LoggingIntegration(
+                level=logging.getLevelName(
+                    settings.LOG_LEVEL,
+                ),
+                event_level=logging.ERROR,
+            ),
+            SqlalchemyIntegration(),
+        ],
+    )
 
 
 # -------------- cache --------------
@@ -90,6 +115,9 @@ def lifespan_factory(
 
         if isinstance(settings, DatabaseSettings) and create_tables_on_start:
             await create_tables()
+
+        if isinstance(settings, SentrySettings):
+            await create_sentry()
 
         if isinstance(settings, RedisCacheSettings):
             await create_redis_cache_pool()

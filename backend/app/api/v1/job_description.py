@@ -70,7 +70,6 @@ async def combined_workflow(
     logging.info(f"Saved parsed job description with id {parsed_job_description.id}")
 
 
-# TODO: move away from background tasks and to redis
 @router.post("/{username}/job_description", response_model=JobDescriptionRead, status_code=status.HTTP_201_CREATED)
 async def create_job_description(
     request: Request,

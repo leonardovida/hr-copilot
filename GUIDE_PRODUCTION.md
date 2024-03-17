@@ -404,11 +404,3 @@ It will automatically run the tests, but if you want to run again later:
 ```sh
 docker-compose run --rm pytest
 ```
-
-### From Scratch
-
-While in the `root` folder, run:
-
-```sh
-poetry run python -m pytest
-```

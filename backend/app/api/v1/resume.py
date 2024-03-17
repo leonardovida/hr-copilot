@@ -154,7 +154,7 @@ async def create_resume(
 
 
 @router.get(
-    "/{username}/resumes/{client}",
+    "/{username}/resumes",
     response_model=PaginatedListResponse[ResumeRead],
     status_code=status.HTTP_200_OK,
 )
@@ -197,7 +197,7 @@ async def get_resumes(
 
 
 @router.get(
-    "/{username}/{resume_id}/process",
+    "/{username}/resume/{id}/process",
     response_model=ResumeRead,
     status_code=status.HTTP_200_OK,
 )
@@ -205,7 +205,7 @@ async def process_resume(
     request: Request,
     username: str,
     db: Annotated[AsyncSession, Depends(async_get_db)],
-    resume_id: int,
+    id: int,
     background_tasks: BackgroundTasks,
     is_text_to_extract: bool = False,
 ) -> CommonResponse:
@@ -221,10 +221,10 @@ async def process_resume(
 
     # Trigger background tasks to process the PDF
     try:
-        resume = await crud_resume.get(db=db, schema_to_select=ResumeRead, id=resume_id)
+        resume = await crud_resume.get(db=db, schema_to_select=ResumeRead, id=id)
         if resume is None:
             raise HTTPException(status_code=404, detail="Resume not found")
-        logging.info(f"Evaluating resume - {resume_id}")
+        logging.info(f"Evaluating resume - {id}")
 
         background_tasks.add_task(
             combined_workflow,
@@ -232,13 +232,13 @@ async def process_resume(
             resume=resume,
             db=db,
         )
-        return CommonResponse(status=settings.STATUS_PROCESSING, message=f"Processing resume - {resume_id}")
+        return CommonResponse(status=settings.STATUS_PROCESSING, message=f"Processing resume - {id}")
     except Exception as e:
-        logging.error(f"Error processing PDF ID {resume_id}: {e}")
+        logging.error(f"Error processing PDF ID {id}: {e}")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.patch("/{username}/post/{id}")
+@router.patch("/{username}/resume/{id}")
 @cache("{username}_resume_cache", resource_id_name="id", pattern_to_invalidate_extra=["{username}_resumes:*"])
 async def update_resume(
     request: Request,
