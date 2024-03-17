@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 from starlette.config import Config
 
 current_file_dir = os.path.dirname(os.path.realpath(__file__))
-env_path = os.path.join(current_file_dir, "..", "..", ".env.local")
+env_path = os.path.join(current_file_dir, "..", "..", ".env")
 config = Config(env_path)
 
 
@@ -16,6 +16,7 @@ class AppSettings(BaseSettings):
     LICENSE_NAME: str | None = config("LICENSE", default=None)
     CONTACT_NAME: str | None = config("CONTACT_NAME", default=None)
     CONTACT_EMAIL: str | None = config("CONTACT_EMAIL", default=None)
+    REFRESH: bool = config("REFRESH", default=False)  # Only set when developing and with uvicorn
 
 
 class CryptSettings(BaseSettings):
