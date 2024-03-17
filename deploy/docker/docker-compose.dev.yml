@@ -56,18 +56,18 @@ services:
       - "6379"
 
   #-------- uncomment to run with pgadmin --------
-  pgadmin:
-    container_name: pgadmin4
-    image: dpage/pgadmin4:latest
-    restart: always
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    env_file:
-      - ./.env-local
-    depends_on:
-      - db
+  # pgadmin:
+  #   container_name: pgadmin4
+  #   image: dpage/pgadmin4:latest
+  #   restart: always
+  #   ports:
+  #     - "5050:80"
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
+  #   env_file:
+  #     - ./.env-local
+  #   depends_on:
+  #     - db
 
   #-------- uncomment to run with nginx --------
   # nginx:
@@ -80,18 +80,18 @@ services:
   #     - web
 
   #-------- uncomment to create first superuser --------
-  # create_superuser:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./.env-local
-  #   depends_on:
-  #     - db
-  #     - web
-  #   command: python -m scripts.create_first_superuser
-  #   volumes:
-  #     - .:/code/
+  create_superuser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env-local
+    depends_on:
+      - db
+      - web
+    command: python -m scripts.create_first_superuser
+    volumes:
+      - .:/code/
 
   #-------- uncomment to run tests --------
   # pytest:

@@ -32,7 +32,7 @@ class UserRead(BaseModel):
 class UserCreate(UserBase):
     model_config = ConfigDict(extra="forbid")
 
-    password: Annotated[str, Field(pattern=r"^.{8,}|[0-9]+|[A-Z]+|[a-z]+|[^a-zA-Z0-9]+$", examples=["Str1ngst!"])]
+    password: Annotated[str, Field(pattern=r"^.{8,}|[0-9]+|[A-Z]+|[a-z]+|[^a-zA-Z0-9]+$", examples=["passw0rd!1"])]
 
 
 class UserCreateInternal(UserBase):

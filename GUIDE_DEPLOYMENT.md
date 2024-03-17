@@ -1,9 +1,30 @@
+# Guide deployment
+
+As you might have noticed, there are multiple ways to deploy this project. This happens frequently as there are infinite ways to deploy a project. This means that the options chones and explained below are by no means the "best" or "only" options available to deploy this. One might argue [Heroku](https://heroku.com/) or [Vultur](https://www.vultr.com/products/cloud-compute/) are better and cheaper, [Railway](https://railway.app/) and [Render](https://render.com/) are more modern and efficient, heck even a full Typescript project might have been better (but definitely not [cheaper](https://twitter.com/shoeboxdnb/status/1643639119824801793) - see Twitter for astronomical bills) leveraging their serveless offering. We don't want to argue, but rather we are offering some choice that we though might help you.
+
+The choices we provide to deploy the backend are the following:
+
+1. Fly.io: this is an easy way to deploy this project in a fully serverless environment. For two instances (staging and production) plus two redis instances it comes out very cheap (\<20$/months).
+
+- Note: you will need to configure the bucket/storage in which the Resume PDF are saved. We provide a `terraform` option that helps you spin them up in AWS. But you could also opt for LiteCloud FS via Fly.io
+
+2. Docker compose: this is a very simple way to deploy this project though it might be more advanced as it requires knowledge of load balancing, SSH into a VM, etc.
+1. DIY: well this is clear and recommended only for those who have a specific strong opinion on how to deploy this app.
+
+For the frontend we recommend to go with Vercel. It's a very simple way to deploy the frontend and it's free for small projects.
+
+## Deploy on Fly.io
+
+## Deploy with Docker Compose on your own VM
+
+## After deployment
+
 ### Creating the first superuser
 
 #### Docker Compose
 
 > \[!WARNING\]
-> Make sure DB and tables are created before running create_superuser (db should be running and the api should run at least once before)
+> Make sure DB and tables are created before running create_superuser (db should be running and the API should run at least once before)
 
 If you are using docker compose, you should uncomment this part of the docker-compose.yml:
 

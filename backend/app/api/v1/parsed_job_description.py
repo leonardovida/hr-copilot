@@ -21,7 +21,9 @@ from ..dependencies import get_current_user
 router = APIRouter(tags=["parsed_job_description"])
 
 
-@router.post("/{username}/job_description", response_model=ParsedJobDescriptionRead, status_code=status.HTTP_200_OK)
+@router.post(
+    "/{username}/parsed_job_description", response_model=ParsedJobDescriptionRead, status_code=status.HTTP_200_OK
+)
 async def create_parsed_job_description(
     request: Request,
     parsed_job_description: ParsedJobDescriptionCreate,

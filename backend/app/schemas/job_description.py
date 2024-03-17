@@ -15,7 +15,7 @@ class JobDescriptionBase(BaseModel):
     ]
     s3_url: Annotated[
         str | None,
-        Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", examples=["https://www.exampleurl.com"], default=None),
+        Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", examples=["s3.exampleurl.com"], default=None),
     ]
 
 
