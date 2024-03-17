@@ -81,7 +81,7 @@ to stop the create_superuser service:
 docker-compose stop create_superuser
 ```
 
-#### 4.From Scratch
+#### From Scratch
 
 While in the `root` folder, run (after you started the application at least once to create the tables):
 
@@ -420,11 +420,11 @@ You'll get:
 Start the Docker Compose services:
 
 ```sh
-docker-compose up -d
+docker-compose -f deploy/docker/docker-compose.yml -f deploy/docker/docker-compose.dev.yml --project-directory ./backend/ up -d
 ```
 
 It will automatically run the tests, but if you want to run again later:
 
 ```sh
-docker-compose run --rm pytest
+docker-compose -f deploy/docker/docker-compose.yml -f deploy/docker/docker-compose.dev.yml --project-directory ./backend/ run --rm pytest
 ```

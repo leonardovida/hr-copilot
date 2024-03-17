@@ -6,6 +6,7 @@ nodemodule/**
 # Deployment
 deploy/fly.io/fly.staging.toml
 deploy/fly.io/fly.production.toml
+backend/volume/**/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

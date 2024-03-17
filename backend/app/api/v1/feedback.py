@@ -6,13 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...core.db.database import async_get_db
 from ...core.exceptions.http_exceptions import ForbiddenException, NotFoundException
+from ...core.logger import logging
 from ...crud.crud_feedback import crud_feedback
 from ...crud.crud_users import crud_users
 from ...schemas.feedback import FeedbackCreate, FeedbackCreateInternal, FeedbackRead
 from ...schemas.user import UserRead
 from ..dependencies import get_current_user
 
-router = fastapi.APIRouter(tags=["feedback"])
+router = fastapi.APIRouter(tags=["feedbacks"])
 
 
 @router.post("/{username}/feedback", response_model=FeedbackRead, status_code=201)
@@ -32,6 +33,8 @@ async def write_feedback(
 
     feedback_internal_dict = feedback.model_dump()
     feedback_internal_dict["created_by_user_id"] = db_user["id"]
+
+    logging.debug(f"feedback_internal_dict: {feedback_internal_dict}")
 
     feedback_internal = FeedbackCreateInternal(**feedback_internal_dict)
     created_feedback: FeedbackRead = await crud_feedback.create(db=db, object=feedback_internal)
