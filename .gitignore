@@ -1,5 +1,11 @@
 # Custom
 .vscode
+nodemodule/**
+# Sensitive variables
+.env*
+# Deployment
+deploy/fly.io/fly.staging.toml
+deploy/fly.io/fly.production.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -112,7 +118,7 @@ poetry.lock
 #   https://pdm.fming.dev/#use-with-ide
 .pdm.toml
 poetry.lock
-src/poetry.lock
+backend/poetry.lock
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
 __pypackages__/

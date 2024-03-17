@@ -1,0 +1,59 @@
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+app = '<name-of-the-app>'
+primary_region = 'ams'
+
+[build]
+  dockerfile = "Dockerfile" # point to the dockerfile
+  ignorefile = ".dockerignore"
+
+[http_service]
+  internal_port = 8000
+  force_https = false
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[env]
+  # Environment secrets needs to placed in fly secrets
+  # `fly secrets --config fly.production.toml set XXX=XXX`
+
+  # General
+  APP_NAME=""
+  APP_DESCRIPTION=""
+  APP_VERSION=""
+  CONTACT_NAME=""
+  CONTACT_EMAIL=""
+  LICENSE_NAME=""
+
+  # Crypt
+  ALGORITHM=""
+  ACCESS_TOKEN_EXPIRE_MINUTES=""
+
+  # Sentry
+  TALENT_COPILOT_SENTRY_DSN=""
+
+  # Redis
+  TALENT_COPILOT_REDIS_HOST=""
+  TALENT_COPILOT_REDIS_PORT=""
+  TALENT_COPILOT_REDIS_USER=""
+
+  # DB
+  POSTGRES_USER=""
+  POSTGRES_PASSWORD=""
+  POSTGRES_SERVER=""
+  POSTGRES_PORT=""
+  POSTGRES_DB=""
+  POSTGRES_ASYNC_PREFIX=""
+
+  TALENT_COPILOT_DB_HOST=""
+  TALENT_COPILOT_DB_PORT=""
+  TALENT_COPILOT_DB_USER=""
+  TALENT_COPILOT_DB_BASE=""
+
+  TALENT_COPILOT_S3_BUCKET_NAME=""
+
+[[vm]]
+  memory = '2gb'
+  cpu_kind = 'shared'
+  cpus = 4 #
