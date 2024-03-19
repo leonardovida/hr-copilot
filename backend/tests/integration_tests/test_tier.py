@@ -70,6 +70,7 @@ def test_patch_tiers(client: TestClient) -> None:
     logging.info(response.json())
     assert response.status_code == 200
 
+
 def test_delete_tiers(client: TestClient) -> None:
     token = _get_token(username=admin_username, password=admin_password, client=client)
 

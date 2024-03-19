@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Annotated
 
-from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict, Field
+from fastapi import UploadFile
+
 
 from ..core.schemas import PersistentDeletion, TimestampSchema, UUIDSchema
 
@@ -35,11 +36,11 @@ class JobDescriptionRead(BaseModel):
 
 
 class JobDescriptionCreate(JobDescriptionBase):
+    pdf_file: UploadFile|None
     s3_url: Annotated[
         str | None,
         Field(pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$", examples=["s3.exampleurl.com"], default=None),
     ]
-    pdf_file: UploadFile | None
     model_config = ConfigDict(extra="forbid")
 
 

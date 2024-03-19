@@ -6,6 +6,7 @@ import fastapi
 from fastapi import BackgroundTasks, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
 from ...api.paginated import PaginatedListResponse, compute_offset, paginated_response
 from ...core.config import settings
 from ...core.db.database import async_get_db
@@ -85,12 +86,19 @@ async def create_job_description(
 
     if current_user["id"] != db_user["id"]:
         raise ForbiddenException()
-
+    
     # If both description and pdf are provided, error: "message not both should be provided"
     if job_description.description != None and job_description.pdf_file != None:
         raise fastapi.HTTPException(
             status_code=400,
             detail="Both description and pdf should not be provided",
+        )
+    
+    # If description is null and pdf is null, error: "You must to provide the description or the pdf"
+    if job_description.description == None and job_description.pdf_file == None:
+        raise fastapi.HTTPException(
+            status_code=400,
+            detail="You must to provide the description or the pdf",
         )
 
     job_description_internal_dict = job_description.model_dump()
