@@ -17,6 +17,7 @@ class Feedback(Base):
         String(length=200),
         nullable=False,
     )
+    s3_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     created_by_user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), index=True)
     description: Mapped[str | None] = mapped_column(String(63206), nullable=True)
     uuid: Mapped[uuid_pkg.UUID] = mapped_column(default_factory=uuid_pkg.uuid4, primary_key=True, unique=True)

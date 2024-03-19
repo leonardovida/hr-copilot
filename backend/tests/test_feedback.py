@@ -19,7 +19,7 @@ client = TestClient(app)
 
 def test_create_feedback(client: TestClient) -> None:
     token = _get_token(username=admin_username, password=admin_password, client=client)
-    data = {"title": "Test Feedback", "description": "This is a test feedback"}
+    data = {"title": "Test Feedback", "description": "This is a test feedback", "pdf_file": None}
     response = client.post(
         f"/api/v1/{admin_username}/feedback",
         json=data,
