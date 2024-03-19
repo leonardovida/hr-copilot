@@ -4,7 +4,7 @@ from app.core.config import settings
 from app.core.logger import logging
 from app.main import app
 
-from .helper import _get_token
+from tests.helper import _get_token
 
 test_name = settings.TEST_NAME
 test_username = settings.TEST_USERNAME
@@ -26,8 +26,9 @@ def test_create_feedback(client: TestClient) -> None:
         headers={"Authorization": f'Bearer {token.json()["access_token"]}'},
     )
     logging.info(response.json())
-    assert response.status_code == 201
     content = response.json()
+
+    assert response.status_code == 201
     assert content["title"] == data["title"]
     assert content["description"] == data["description"]
     assert "id" in content
@@ -42,8 +43,9 @@ def test_create_feedback_user_not_found(client: TestClient) -> None:
         json=data,
         headers={"Authorization": f'Bearer {token.json()["access_token"]}'},
     )
-    assert response.status_code == 404
     content = response.json()
+    
+    assert response.status_code == 404
     assert content["detail"] == "User not found"
 
 

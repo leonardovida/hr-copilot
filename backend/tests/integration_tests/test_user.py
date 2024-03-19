@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from app.core.config import settings
 from app.main import app
 
-from .helper import _get_token
+from tests.helper import _get_token
 
 test_name = settings.TEST_NAME
 test_username = settings.TEST_USERNAME
