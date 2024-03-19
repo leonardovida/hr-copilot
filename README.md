@@ -18,6 +18,7 @@ Currently it provides the following:
 
 ### What it will do
 
+- Grade base systems (A,B, C, D)
 - Allow the definition of custom "metrics" (i.e. dimensions) to use to parse and extract information about the job description and the resume. Think about "average duration in a company", "front-facing vs. backoffice-facing roles", etc.
 - Use the parsed informations to create a rejection/acceptance email to send to the candidate with an explanation.
 - Reverse search: given resumes (which are then parsed), search and index across internal (and/or external) job boards scraping descriptions and matching them to resumes. Once this is done, provide the top resumes for each job description to be sent or proposed.

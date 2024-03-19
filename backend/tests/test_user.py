@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
-from backend.app.core.config import settings
-from backend.app.main import app
+from app.core.config import settings
+from app.main import app
 
 from .helper import _get_token
 

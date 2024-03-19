@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
       # -------- replace with comment to run with gunicorn --------
-      # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # command: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000
     env_file:
       - ./.env
     # -------- replace with comment if you are using nginx --------
@@ -94,19 +94,19 @@ services:
       - .:/code/
 
   #-------- uncomment to run tests --------
-  # pytest:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - ./.env
-  #   depends_on:
-  #     - db
-  #     - create_superuser
-  #     - redis
-  #   command: python -m pytest ./tests
-  #   volumes:
-  #     - .:/code
+  pytest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - create_superuser
+      - redis
+    command: python -m pytest ./tests
+    volumes:
+      - .:/code
 
   #-------- uncomment to create first tier and limits --------
   create_tier:
@@ -134,9 +134,6 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-    networks:
-      ls:
-        ipv4_address: 10.0.2.20
 
 volumes:
   postgres-data:

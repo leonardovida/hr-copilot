@@ -12,7 +12,7 @@ class Feedback(Base):
 
     __tablename__ = "feedbacks"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column("id", autoincrement=True, nullable=False, unique=True, primary_key=True, init=False)
     title: Mapped[str] = mapped_column(
         String(length=200),
         nullable=False,
