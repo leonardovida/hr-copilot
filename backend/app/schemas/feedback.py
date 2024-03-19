@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Annotated
 
+from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..core.schemas import PersistentDeletion, TimestampSchema, UUIDSchema
@@ -27,10 +28,19 @@ class FeedbackRead(BaseModel):
 
 
 class FeedbackCreate(FeedbackBase):
+    pdf_file: Annotated[UploadFile | None, Field(default=None)]
     model_config = ConfigDict(extra="forbid")
 
 
-class FeedbackCreateInternal(FeedbackCreate):
+class FeedbackCreateInternal(FeedbackBase):
+    s3_url: Annotated[
+        str | None,
+        Field(
+            pattern=r"^(https?|ftp)://[^\s/$.?#].[^\s]*$",
+            examples=["https://www.example.com/feedback.pdf"],
+            default=None,
+        ),
+    ]
     created_by_user_id: int
 
 
